@@ -102,6 +102,7 @@ while True:
         if event.type == pygame.KEYDOWN:
             if start_text_display:
                 start_text_display = False
+                counter = 60
                 typed_letters = []
                 letters = get_letters()
                 letter_pos_x = 350
@@ -116,7 +117,7 @@ while True:
                     typed_letters.append(event.unicode)
                     letter_pos_x -= 18
         if event.type == pygame.USEREVENT:
-            if not waiting:
+            if not waiting and not start_text_display:
                 counter -= 1
                 timer_text = str(counter).rjust(3) if counter > 0 else "Time's up!"
                 if counter <= 0:
@@ -126,7 +127,6 @@ while True:
                 if wait_timer <= 0:
                     start_text_display = True
                     waiting = False
-                    counter = 60
                     wait_timer = 3 
                 
     pygame.display.update()   
