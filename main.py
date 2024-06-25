@@ -17,6 +17,7 @@ text_font = pygame.font.SysFont("Arial", 50)
 letter_color = (0, 0, 0)
 letter_color_correct = (0, 255, 0)
 letter_color_incorrect = (255, 0, 0)
+cursor_color = (0, 0, 0)
 
 # Load background image
 try:
@@ -54,6 +55,10 @@ total_chars = 0
 wpm = 0
 accuracy = 0
 
+#Cursor variables
+cursor_blink = True
+cursor_blink_timer = 0
+
 waiting = False
 wait_timer = 3
 
@@ -66,7 +71,7 @@ while True:
         if wpm > 0:
             draw_text(f"WPM: {wpm:.2f}", text_font, letter_color, 50, 400)
         if accuracy > 0:   
-            draw_text(f"Accuracy: {accuracy:.2f}%", text_font, letter_color, 450, 400)
+            draw_text(f"Accuracy: {accuracy:.2f}%", text_font, letter_color, 450, 400)          
     else:
         current_x = letter_pos_x
         correct_chars = 0
@@ -81,7 +86,10 @@ while True:
             else:
                 color = letter_color
             letter_width = draw_text(letter, text_font, color, current_x, letter_pos_y)
+            if i == len(typed_letters):
+                cursor_x = current_x
             current_x += letter_width
+               
 
         elapsed_time = 60 - counter
         if elapsed_time > 0:
@@ -95,6 +103,10 @@ while True:
         draw_text(f"Accuracy: {accuracy:.2f}%", text_font, letter_color, 450, 400)
         draw_text(timer_text, text_font, letter_color, 400, 50)
 
+        if cursor_blink:
+            pygame.draw.line(screen, cursor_color, (cursor_x, letter_pos_y + 5), (cursor_x, letter_pos_y + 55), 2)
+
+                
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -115,7 +127,7 @@ while True:
                         letter_pos_x += 18
                 elif counter > 0:
                     typed_letters.append(event.unicode)
-                    letter_pos_x -= 18
+                    letter_pos_x -= 18         
         if event.type == pygame.USEREVENT:
             if not waiting and not start_text_display:
                 counter -= 1
@@ -127,7 +139,14 @@ while True:
                 if wait_timer <= 0:
                     start_text_display = True
                     waiting = False
-                    wait_timer = 3 
+                    wait_timer = 3
+        if event.type == pygame.KEYUP:
+            cursor_blink = True  
+    cursor_blink_timer += 1
+    if cursor_blink_timer % 30 == 0:
+        cursor_blink = not cursor_blink
+
+                    
                 
     pygame.display.update()   
 
